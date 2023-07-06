@@ -24,8 +24,10 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           args: --timeout 5m
-      - name: Vet & test
+      - name: Vet & test & golint
         run: |
-          # Vet & test
+          # Vet & test & golint
           go vet -v ./...
           go test -v ./...
+          go install golang.org/x/lint/golint@latest
+          golint ./...
