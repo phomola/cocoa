@@ -66,14 +66,22 @@ func (r *Remote) SendBytes(id int, data []byte) (out []byte, err error) {
 }
 
 // Send sends a structure to the port.
-func (r *Remote) Send(id int, in, out interface{}) error {
+func (r *Remote) Send(id int, in, out interface{}) (outErr error) {
 	b, err := json.Marshal(in)
 	if err != nil {
 		return err
 	}
-	b, err = r.SendBytes(id, b)
-	if err != nil {
-		return err
+	cfData := C.CFDataCreateWithBytesNoCopy(C.kCFAllocatorDefault, (*C.uchar)(unsafe.Pointer(unsafe.SliceData(b))), C.long(len(b)), C.kCFAllocatorNull)
+	defer C.CFRelease(C.CFTypeRef(cfData))
+	var returnData C.CFDataRef
+	if C.CFMessagePortSendRequest(r.port, C.int(id), cfData, 10, 10, C.kCFRunLoopDefaultMode, &returnData) == C.kCFMessagePortSuccess &&
+		returnData != 0 {
+		defer C.CFRelease(C.CFTypeRef(returnData))
+		b := unsafe.Slice((*byte)(C.CFDataGetBytePtr(returnData)), C.int(C.CFDataGetLength(returnData)))
+		outErr = json.Unmarshal(b, out)
+	} else {
+		outErr = ErrSend
 	}
-	return json.Unmarshal(b, out)
+	runtime.KeepAlive(b)
+	return
 }
