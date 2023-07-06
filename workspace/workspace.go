@@ -9,14 +9,17 @@ package workspace
 	#error ARC isn't allowed
 #endif
 inline bool cocoa_open_file(char* cfile) {
-	__auto_type file = [[NSString alloc] initWithCString: cfile encoding: NSUTF8StringEncoding];
-	__auto_type r = [[NSWorkspace sharedWorkspace] openURL: [NSURL fileURLWithPath: file]];
-	[file release];
-	return r;
+	@autoreleasepool {
+		__auto_type file = [NSString stringWithCString: cfile encoding: NSUTF8StringEncoding];
+		return [[NSWorkspace sharedWorkspace] openURL: [NSURL fileURLWithPath: file]];
+	}
 }
 */
 import "C"
-import "unsafe"
+
+import (
+	"unsafe"
+)
 
 func Open(file string) bool {
 	cstring := C.CString(file)
