@@ -21,6 +21,7 @@ import (
 	"unsafe"
 )
 
+// Open opens the provided file.
 func Open(file string) bool {
 	cstring := C.CString(file)
 	defer C.free(unsafe.Pointer(cstring))
