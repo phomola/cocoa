@@ -8,7 +8,7 @@ package workspace
 #if __has_feature(objc_arc)
 	#error ARC isn't allowed
 #endif
-inline bool cocoa_open_file(char* cfile) {
+inline BOOL cocoa_open_file(char* cfile) {
 	@autoreleasepool {
 		__auto_type file = [NSString stringWithCString: cfile encoding: NSUTF8StringEncoding];
 		return [[NSWorkspace sharedWorkspace] openURL: [NSURL fileURLWithPath: file]];
