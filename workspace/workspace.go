@@ -11,7 +11,7 @@ package workspace
 inline bool cocoa_open_file(char* cfile) {
 	@autoreleasepool {
 		__auto_type file = [NSString stringWithCString: cfile encoding: NSUTF8StringEncoding];
-		return [[NSWorkspace sharedWorkspace] openURL: [NSURL fileURLWithPath: file]];
+		return [[NSWorkspace sharedWorkspace] openURL: [NSURL fileURLWithPath: file]] == YES;
 	}
 }
 */
